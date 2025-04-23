@@ -25,5 +25,9 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@babel/standalone": "^7.27.0",
+    "@monaco-editor/react": "^4.7.0"
   }
 }

@@ -20,6 +20,14 @@ export interface DataGridRow {
   [key: string]: any;
 }
 
+export interface DataGridPaginationContext {
+  page: number;
+  setPage: (page: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void;
+  pageCount: number;
+}
+
 export interface DataGridProps {
   columns: DataGridColumn[];
   rows: DataGridRow[];
@@ -34,12 +42,49 @@ export interface DataGridProps {
   children?: React.ReactNode;
 }
 
+const PaginationContext = React.createContext<DataGridPaginationContext | undefined>(undefined);
+
+export function useDataGridPaginationContext(): DataGridPaginationContext {
+  const ctx = React.useContext(PaginationContext);
+  if (!ctx) throw new Error('useDataGridPaginationContext must be used within <DataGrid.Pagination>');
+  return ctx;
+}
+
+export function PrevButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { page, setPage } = useDataGridPaginationContext();
+  return (
+    <button
+      type="button"
+      className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+      onClick={() => setPage(page - 1)}
+      disabled={page === 0}
+      {...props}
+    >
+      Prev
+    </button>
+  );
+}
+
+export function NextButton(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const { page, setPage, pageCount } = useDataGridPaginationContext();
+  return (
+    <button
+      type="button"
+      className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+      onClick={() => setPage(page + 1)}
+      disabled={page === pageCount - 1}
+      {...props}
+    >
+      Next
+    </button>
+  );
+}
+
 // Slot identifiers
 const SLOT_TOOLBAR = 'DataGridToolbar';
 const SLOT_PAGINATION = 'DataGridPagination';
 const SLOT_FILTER_PANEL = 'DataGridFilterPanel';
 
-// Slot components
 export function ToolbarSlot(props: { children?: React.ReactNode }) {
   return <>{props.children}</>;
 }
@@ -72,6 +117,8 @@ export const DataGrid: React.FC<DataGridProps> & {
   Toolbar: typeof ToolbarSlot;
   Pagination: typeof PaginationSlot;
   FilterPanel: typeof FilterPanelSlot;
+  PrevButton: typeof PrevButton;
+  NextButton: typeof NextButton;
 } = ({
   columns,
   rows,
@@ -94,13 +141,28 @@ export const DataGrid: React.FC<DataGridProps> & {
   const paginationSlot = getSlot(children, SLOT_PAGINATION);
   const filterPanelSlot = getSlot(children, SLOT_FILTER_PANEL);
 
-  // Paginate rows
+  // Pagination logic
+  const effectivePage = onPageChange ? page : internalPage;
+  const effectivePageSize = onPageSizeChange ? pageSize : internalPageSize;
+  const pageCount = Math.ceil(rows.length / effectivePageSize);
   const pagedRows = enablePagination
-    ? rows.slice(
-        (onPageChange ? page : internalPage) * (onPageSizeChange ? pageSize : internalPageSize),
-        ((onPageChange ? page : internalPage) + 1) * (onPageSizeChange ? pageSize : internalPageSize)
-      )
+    ? rows.slice(effectivePage * effectivePageSize, (effectivePage + 1) * effectivePageSize)
     : rows;
+
+  // Provide context for pagination slot
+  const paginationContextValue = React.useMemo(() => ({
+    page: effectivePage,
+    setPage: (p: number) => {
+      if (onPageChange) onPageChange(p);
+      else setInternalPage(p);
+    },
+    pageSize: effectivePageSize,
+    setPageSize: (s: number) => {
+      if (onPageSizeChange) onPageSizeChange(s);
+      else setInternalPageSize(s);
+    },
+    pageCount,
+  }), [effectivePage, effectivePageSize, pageCount, onPageChange, onPageSizeChange]);
 
   return (
     <div role="grid" className={className} style={style}>
@@ -124,7 +186,11 @@ export const DataGrid: React.FC<DataGridProps> & {
         ))}
       </div>
       {filterPanelSlot}
-      {enablePagination && paginationSlot}
+      {enablePagination && (
+        <PaginationContext.Provider value={paginationContextValue}>
+          {paginationSlot}
+        </PaginationContext.Provider>
+      )}
     </div>
   );
 };
@@ -132,3 +198,5 @@ export const DataGrid: React.FC<DataGridProps> & {
 DataGrid.Toolbar = ToolbarSlot;
 DataGrid.Pagination = PaginationSlot;
 DataGrid.FilterPanel = FilterPanelSlot;
+DataGrid.PrevButton = PrevButton;
+DataGrid.NextButton = NextButton;

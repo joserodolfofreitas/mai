@@ -2,5 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/docs/features/pagination": "pages/docs/features/pagination.js"
+  "/docs/features/full-featured": "pages/docs/features/full-featured.js"
 }

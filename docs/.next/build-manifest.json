@@ -22,10 +22,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/docs/features/pagination": [
+    "/docs/features/full-featured": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/docs/features/pagination.js"
+      "static/chunks/pages/docs/features/full-featured.js"
     ]
   },
   "ampFirstPages": []
