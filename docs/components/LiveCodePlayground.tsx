@@ -29,6 +29,11 @@ export const LiveCodePlayground: React.FC<LiveCodePlaygroundProps> = ({ initialC
         presets: ['react', 'typescript'],
         filename: 'playground.tsx', // Add filename to avoid Babel error
       }).code;
+
+      if (!transpiled) {
+        throw new Error('Babel transpilation failed.');
+      }
+
       const scopeKeys = Object.keys(scope);
       const scopeValues = Object.values(scope);
 
@@ -54,28 +59,49 @@ export const LiveCodePlayground: React.FC<LiveCodePlaygroundProps> = ({ initialC
       setComponent(() => Comp); // Set state with the retrieved component
     } catch (e: any) {
       setError(e.message || String(e));
+      setComponent(() => () => null); // Clear component on error
     }
   }
 
+  // Run the initial code when the component mounts
   React.useEffect(() => {
+    transpileAndRun(initialCode);
+  }, [initialCode]); // Rerun if initialCode changes (though unlikely)
+
+  function handleEditorChange(value: string | undefined) {
+    setCode(value || '');
+  }
+
+  function handleRunClick() {
     transpileAndRun(code);
-    // eslint-disable-next-line
-  }, []);
+  }
 
   return (
     <div>
+      {/* Rendered Component Preview (Moved to the top) */}
+      <div style={{ border: '1px solid #e5e7eb', borderRadius: 6, padding: 16, minHeight: 80 }}>
+        {error ? (
+          <div style={{ color: 'red', marginBottom: 8, whiteSpace: 'pre-wrap' }}>{error}</div>
+        ) : (
+          <Component />
+        )}
+      </div>
+
+      {/* Code Editor */}
       <div style={{ border: '1px solid #e5e7eb', borderRadius: 6, marginBottom: 8 }}>
         <MonacoEditor
           height={height}
           defaultLanguage="typescript"
           value={code}
-          onChange={value => setCode(value || '')}
+          onChange={value => handleEditorChange(value)}
           theme="vs-light"
           options={{ fontSize: 14, minimap: { enabled: false } }}
         />
       </div>
+
+      {/* Run Button */}
       <button
-        onClick={() => transpileAndRun(code)}
+        onClick={handleRunClick}
         style={{
           padding: '6px 16px',
           background: '#111',
@@ -87,10 +113,6 @@ export const LiveCodePlayground: React.FC<LiveCodePlaygroundProps> = ({ initialC
           cursor: 'pointer',
         }}
       >Run</button>
-      {error && <div style={{ color: 'red', marginBottom: 8, whiteSpace: 'pre-wrap' }}>{error}</div>}
-      <div style={{ border: '1px solid #e5e7eb', borderRadius: 6, padding: 16, minHeight: 80 }}>
-        <Component />
-      </div>
     </div>
   );
 };

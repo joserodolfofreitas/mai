@@ -87,13 +87,7 @@ export default function PaginationDocs() {
           The DataGrid supports pagination via slot-based composition. Use the provided <code>PrevButton</code>, <code>NextButton</code>, and <code>useDataGridPaginationContext</code> primitives for full control.
         </p>
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-4 border-b pb-2">Working Example</h2>
-          <ClientOnly>
-            <PaginationExample />
-          </ClientOnly>
-        </section>
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-2">Live Editable Example</h2>
+          <p className="mb-4">The playground below demonstrates pagination:</p>
           <ClientOnly>
             <LiveCodePlayground
               initialCode={paginationSource}

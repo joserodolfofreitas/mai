@@ -98,11 +98,6 @@ export default function DataGridDocs() {
         {/* Basic Usage Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4 border-b pb-2">Basic Usage</h2>
-          <h3 className="text-xl font-semibold mb-2">Working Example</h3>
-          <ClientOnly>
-            <BasicExample />
-          </ClientOnly>
-          <h3 className="text-xl font-semibold mt-6 mb-2">Live Editable Example</h3>
           <ClientOnly>
             <LiveCodePlayground
               initialCode={basicSource}
@@ -114,12 +109,7 @@ export default function DataGridDocs() {
         {/* Slot-based Toolbar Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4 border-b pb-2">Slot-based Toolbar</h2>
-          <p className="mb-4">Compose custom toolbars using the <code>DataGrid.Toolbar</code> slot.</p>
-          <h3 className="text-xl font-semibold mb-2">Working Example</h3>
-          <ClientOnly>
-            <ToolbarExample />
-          </ClientOnly>
-          <h3 className="text-xl font-semibold mt-6 mb-2">Live Editable Example</h3>
+          <p className="mb-4">Compose custom toolbars using the <code>DataGrid.Toolbar</code> slot. The playground below demonstrates this:</p>
           <ClientOnly>
             <LiveCodePlayground
               initialCode={toolbarSource}
@@ -131,12 +121,7 @@ export default function DataGridDocs() {
         {/* Slot-based Pagination Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4 border-b pb-2">Slot-based Pagination</h2>
-          <p className="mb-4">Implement custom pagination logic using the <code>DataGrid.Pagination</code> slot. You can use the context hook for more complex state management (see <Link href="/docs/features/pagination" className="text-blue-600 underline hover:text-blue-800">Pagination Feature</Link>).</p>
-          <h3 className="text-xl font-semibold mb-2">Working Example</h3>
-          <ClientOnly>
-            <DataGridPaginationExample />
-          </ClientOnly>
-          <h3 className="text-xl font-semibold mt-6 mb-2">Live Editable Example</h3>
+          <p className="mb-4">Implement custom pagination logic using the <code>DataGrid.Pagination</code> slot. You can use the context hook for more complex state management (see <Link href="/docs/features/pagination" className="text-blue-600 underline hover:text-blue-800">Pagination Feature</Link>). Try the playground below:</p>
           <ClientOnly>
             <LiveCodePlayground
               initialCode={paginationSource}

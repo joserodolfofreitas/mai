@@ -141,8 +141,11 @@ export default function FullFeaturedDocs() {
         <p className="mb-4">
           This example demonstrates a DataGrid with all major features: filter panel, column management, toolbar with pagination, and a footer export button. Use this as a starting point for building a fully interactive data grid experience.
         </p>
+        <p className="mb-4">
+          This example combines several features including filtering, column visibility, toolbar, pagination, and export.
+        </p>
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-2">Live Editable Example</h2>
+          <p className="mb-4">Explore the combined features in the playground below:</p>
           <ClientOnly>
             <LiveCodePlayground
               initialCode={fullFeaturedSource}
@@ -150,12 +153,6 @@ export default function FullFeaturedDocs() {
               exampleFunctionName="FullFeaturedExample"
               height="500px"
             />
-          </ClientOnly>
-        </section>
-        <section className="mb-12">
-          <h2 className="text-2xl font-semibold mb-2">Rendered Example (always works)</h2>
-          <ClientOnly>
-            <FullFeaturedDataGridExample />
           </ClientOnly>
         </section>
       </main>
