@@ -5,24 +5,6 @@
       "static/chunks/node_modules_pnpm_monaco-editor_react_4_7_0_monaco-editor_0_52_2_react-dom_18_3_1_react_18_3_-cdc73c.js"
     ]
   },
-  "pages/docs/datagrid.tsx -> ../../components/examples/BasicExample": {
-    "id": "pages/docs/datagrid.tsx -> ../../components/examples/BasicExample",
-    "files": [
-      "static/chunks/components_examples_BasicExample_tsx.js"
-    ]
-  },
-  "pages/docs/datagrid.tsx -> ../../components/examples/DataGridPaginationExample": {
-    "id": "pages/docs/datagrid.tsx -> ../../components/examples/DataGridPaginationExample",
-    "files": [
-      "static/chunks/components_examples_DataGridPaginationExample_tsx.js"
-    ]
-  },
-  "pages/docs/datagrid.tsx -> ../../components/examples/ToolbarExample": {
-    "id": "pages/docs/datagrid.tsx -> ../../components/examples/ToolbarExample",
-    "files": [
-      "static/chunks/components_examples_ToolbarExample_tsx.js"
-    ]
-  },
   "pages/docs/features/full-featured.tsx -> ../../../components/examples/FullFeaturedDataGridExample": {
     "id": "pages/docs/features/full-featured.tsx -> ../../../components/examples/FullFeaturedDataGridExample",
     "files": [

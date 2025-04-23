@@ -2,6 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/docs/features/full-featured": "pages/docs/features/full-featured.js",
-  "/docs/datagrid": "pages/docs/datagrid.js"
+  "/docs/features/full-featured": "pages/docs/features/full-featured.js"
 }

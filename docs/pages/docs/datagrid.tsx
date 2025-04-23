@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import * as React from 'react';
-import { DataGrid } from '@mai/datagrid';
+import { DataGrid, PrevButton, NextButton, useDataGridPaginationContext } from '@mai/datagrid';
 import { LiveCodePlayground } from '../../components/LiveCodePlayground';
 import { ClientOnly } from '../../components/ClientOnly';
 
@@ -73,9 +73,113 @@ const paginationSource = `function DataGridPaginationExample() {
   );
 }`;
 
+const fullFeaturedSource = `function FullFeaturedDataGridExample() {
+  const [filters, setFilters] = React.useState({ name: '', age: '' });
+  const [columnsState, setColumnsState] = React.useState({ name: true, age: true, email: true });
+  const [exported, setExported] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const columns = [
+    { field: 'id', headerName: 'ID', width: 60 },
+    columnsState.name && { field: 'name', headerName: 'Name', hideable: true },
+    columnsState.age && { field: 'age', headerName: 'Age', filterable: true },
+    columnsState.email && { field: 'email', headerName: 'Email', hideable: true }
+  ].filter(Boolean);
+
+  const allRows = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: \`User \${i + 1}\`,
+    age: 20 + (i % 10),
+    email: \`user\${i + 1}@example.com\`
+  }));
+
+  const filteredRows = allRows.filter(row => {
+    return (
+      (!filters.name || row.name.toLowerCase().includes(filters.name.toLowerCase())) &&
+      (!filters.age || String(row.age).includes(filters.age))
+    );
+  });
+
+  // Only access pagination context on the client
+  let page = 0, pageCount = 1;
+  if (mounted) {
+    try {
+      const paginationContext = useDataGridPaginationContext();
+      page = paginationContext.page;
+      pageCount = paginationContext.pageCount;
+    } catch (e) {
+      // Silently handle context errors during initial mount
+    }
+  }
+
+  function handleExport() {
+    setExported(true);
+    setTimeout(() => setExported(false), 2000);
+  }
+
+  return (
+    <DataGrid columns={columns} rows={filteredRows}>
+      <DataGrid.Toolbar>
+        <div className="flex items-center gap-2 mb-2">
+          <button
+            className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+            onClick={() => {
+              const name = prompt('Filter by name:', filters.name);
+              if (name !== null) setFilters(f => ({ ...f, name }));
+            }}
+          >Filter Panel</button>
+          <button
+            className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+            onClick={() => {
+              const next = { ...columnsState };
+              for (const key in next) next[key] = window.confirm(\`Show column \${key}?\`);
+              setColumnsState(next);
+            }}
+          >Columns</button>
+          <span className="ml-auto font-semibold">Toolbar</span>
+        </div>
+      </DataGrid.Toolbar>
+      <DataGrid.FilterPanel>
+        <div className="border border-gray-300 rounded bg-gray-50 p-2 mb-2 flex gap-2">
+          <label className="flex flex-col text-xs">Name
+            <input value={filters.name} onChange={e => setFilters(f => ({ ...f, name: e.target.value }))} className="border rounded px-1 py-0.5" />
+          </label>
+          <label className="flex flex-col text-xs">Age
+            <input value={filters.age} onChange={e => setFilters(f => ({ ...f, age: e.target.value }))} className="border rounded px-1 py-0.5" />
+          </label>
+        </div>
+      </DataGrid.FilterPanel>
+      <DataGrid.Pagination>
+        {mounted && (
+          <div className="flex justify-end items-center gap-2 mt-2">
+            <PrevButton />
+            <span className="text-black">Page {page + 1} of {pageCount}</span>
+            <NextButton />
+          </div>
+        )}
+      </DataGrid.Pagination>
+      <div className="flex justify-between items-center mt-4">
+        <div className="text-gray-500">
+          {mounted ? \`Showing \${page * 25 + 1} - \${Math.min((page + 1) * 25, filteredRows.length)} of \${filteredRows.length}\` : ''}
+        </div>
+        <button
+          className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+          onClick={handleExport}
+        >Export</button>
+        {exported && <span className="ml-2 text-green-600">Exported!</span>}
+      </div>
+    </DataGrid>
+  );
+}
+`;
+
 export default function DataGridDocs() {
   // Scope for playgrounds
-  const scope = { React, DataGrid };
+  const scope = { React, DataGrid, PrevButton, NextButton, useDataGridPaginationContext };
 
   return (
     <div className="min-h-screen bg-white text-black px-4 py-8">
@@ -106,18 +210,6 @@ export default function DataGridDocs() {
             />
           </ClientOnly>
         </section>
-        {/* Slot-based Toolbar Section */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-semibold mb-4 border-b pb-2">Slot-based Toolbar</h2>
-          <p className="mb-4">Compose custom toolbars using the <code>DataGrid.Toolbar</code> slot. The playground below demonstrates this:</p>
-          <ClientOnly>
-            <LiveCodePlayground
-              initialCode={toolbarSource}
-              scope={scope}
-              exampleFunctionName="ToolbarExample"
-            />
-          </ClientOnly>
-        </section>
         {/* Slot-based Pagination Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4 border-b pb-2">Slot-based Pagination</h2>
@@ -130,20 +222,19 @@ export default function DataGridDocs() {
             />
           </ClientOnly>
         </section>
+        {/* Features Section */}
         <section className="mb-12">
           <h2 className="text-2xl font-semibold mb-2">Features</h2>
           <ul className="list-disc pl-6">
-            <li>Virtualization for performance</li>
-            <li>Toolbar with export, filter panel, quick filter input</li>
-            <li>Column management (visibility, reorder, pinning)</li>
-            <li>Filtering, sorting, row grouping, pagination, aggregation</li>
-            <li>Composable and customizable via <strong>slot-based composition</strong></li>
-            <li>Unstyled by default</li>
-            <li>Behavior hooks for advanced use</li>
-            <li>
-              <Link href="/docs/features/pagination" className="underline text-black font-semibold hover:text-white hover:bg-black px-2 py-1 rounded transition">Pagination</Link>
-            </li>
+            <li>Composable and unstyled</li>
+            <li>Virtualized rendering for performance</li>
+            <li>Customizable columns and toolbars</li>
+            <li>Pagination and filtering support (<Link href="/docs/features/pagination" className="underline text-blue-600 hover:text-blue-800">see details</Link>)</li>
+            <li>Export functionality</li>
           </ul>
+          <div className="mt-4">
+            <Link href="/docs/features/full-featured" className="text-blue-600 underline hover:text-blue-800 font-semibold">See standalone full-featured demo →</Link>
+          </div>
         </section>
       </main>
     </div>

@@ -14,6 +14,7 @@ const fullFeaturedSource = `function FullFeaturedExample() {
   const [filters, setFilters] = React.useState({ name: '', age: '' });
   const [columnsState, setColumnsState] = React.useState({ name: true, age: true, email: true });
   const [exported, setExported] = React.useState(false);
+  const [filterPanelOpen, setFilterPanelOpen] = React.useState(false);
 
   const columns = [
     { field: 'id', headerName: 'ID', width: 60 },
@@ -60,13 +61,11 @@ const fullFeaturedSource = `function FullFeaturedExample() {
   return (
     <DataGrid columns={columns} rows={filteredRows}>
       <DataGrid.Toolbar>
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2 mb-2 relative" id="filter-toolbar-row">
           <button
             className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
-            onClick={() => {
-              const name = prompt('Filter by name:', filters.name);
-              if (name !== null) setFilters(f => ({ ...f, name }));
-            }}
+            onClick={() => setFilterPanelOpen(true)}
+            id="open-filter-panel-btn"
           >Filter Panel</button>
           <button
             className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
@@ -77,18 +76,28 @@ const fullFeaturedSource = `function FullFeaturedExample() {
             }}
           >Columns</button>
           <span className="ml-auto font-semibold">Toolbar</span>
+          {filterPanelOpen && (
+            <div className="absolute left-0 top-full mt-2 z-20 bg-white shadow-lg border border-gray-300 rounded p-4 flex gap-4 items-end" style={{ minWidth: 320 }}>
+              <label className="flex flex-col text-xs">Name
+                <input value={filters.name} onChange={e => setFilters(f => ({ ...f, name: e.target.value }))} className="border rounded px-1 py-0.5" />
+              </label>
+              <label className="flex flex-col text-xs">Age
+                <input value={filters.age} onChange={e => setFilters(f => ({ ...f, age: e.target.value }))} className="border rounded px-1 py-0.5" />
+              </label>
+              {(filters.name || filters.age) && (
+                <button
+                  className="ml-2 px-2 py-0.5 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+                  onClick={() => setFilters({ name: '', age: '' })}
+                >Clear</button>
+              )}
+              <button
+                className="ml-2 px-2 py-0.5 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
+                onClick={() => setFilterPanelOpen(false)}
+              >Close</button>
+            </div>
+          )}
         </div>
       </DataGrid.Toolbar>
-      <DataGrid.FilterPanel>
-        <div className="border border-gray-300 rounded bg-gray-50 p-2 mb-2 flex gap-2">
-          <label className="flex flex-col text-xs">Name
-            <input value={filters.name} onChange={e => setFilters(f => ({ ...f, name: e.target.value }))} className="border rounded px-1 py-0.5" />
-          </label>
-          <label className="flex flex-col text-xs">Age
-            <input value={filters.age} onChange={e => setFilters(f => ({ ...f, age: e.target.value }))} className="border rounded px-1 py-0.5" />
-          </label>
-        </div>
-      </DataGrid.FilterPanel>
       <DataGrid.Pagination>
         {mounted && (
           <div className="flex justify-end items-center gap-2 mt-2">

@@ -112,7 +112,7 @@ export const LiveCodePlayground: React.FC<LiveCodePlaygroundProps> = ({ initialC
           marginBottom: 12,
           cursor: 'pointer',
         }}
-      >Run</button>
+      >Run ﹥</button>
     </div>
   );
 };
