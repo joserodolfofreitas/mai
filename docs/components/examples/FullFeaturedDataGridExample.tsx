@@ -52,7 +52,6 @@ export function FullFeaturedDataGridExample() {
 
   return (
     <div className="relative">
-      <H1>LEROLERO</H1>
       <DataGrid columns={columns} rows={filteredRows}>
         <DataGrid.Toolbar>
           <div className="flex items-center gap-2 mb-2">
