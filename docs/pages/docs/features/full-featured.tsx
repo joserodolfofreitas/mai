@@ -11,7 +11,16 @@ const FullFeaturedDataGridExample = dynamic(
 );
 
 const fullFeaturedSource = `function FullFeaturedExample() {
-  const [filters, setFilters] = React.useState({ name: '', age: '' });
+  const [filters, setFilters] = React.useState({
+    id: '',
+    name: '',
+    age: '',
+    email: '',
+    idOp: 'equals',
+    nameOp: 'contains',
+    ageOp: 'equals',
+    emailOp: 'contains',
+  });
   const [columnsState, setColumnsState] = React.useState({ name: true, age: true, email: true });
   const [exported, setExported] = React.useState(false);
   const [filterPanelOpen, setFilterPanelOpen] = React.useState(false);
@@ -30,15 +39,25 @@ const fullFeaturedSource = `function FullFeaturedExample() {
     email: \`user\${i + 1}@example.com\`
   }));
 
+  function stringFilter(value, filter, op) {
+    if (!filter) return true;
+    if (op === 'equals') return value === filter;
+    if (op === 'contains') return value.toLowerCase().includes(filter.toLowerCase());
+    if (op === 'startsWith') return value.toLowerCase().startsWith(filter.toLowerCase());
+    if (op === 'endsWith') return value.toLowerCase().endsWith(filter.toLowerCase());
+    return true;
+  }
+
   const filteredRows = allRows.filter(row => {
     return (
-      (!filters.name || row.name.toLowerCase().includes(filters.name.toLowerCase())) &&
-      (!filters.age || String(row.age).includes(filters.age))
+      (!filters.id || row.id == filters.id) &&
+      stringFilter(row.name, filters.name, filters.nameOp) &&
+      (!filters.age || String(row.age) === filters.age) &&
+      stringFilter(row.email, filters.email, filters.emailOp)
     );
   });
 
   // Only call the hook when mounted in the client
-  // In a real app, you wouldn't need this check
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => { setMounted(true); }, []);
   
@@ -48,9 +67,7 @@ const fullFeaturedSource = `function FullFeaturedExample() {
       const paginationContext = useDataGridPaginationContext();
       page = paginationContext.page;
       pageCount = paginationContext.pageCount;
-    } catch (e) {
-      // Silently handle context errors during initial mount
-    }
+    } catch (e) {}
   }
 
   function handleExport() {
@@ -61,11 +78,10 @@ const fullFeaturedSource = `function FullFeaturedExample() {
   return (
     <DataGrid columns={columns} rows={filteredRows}>
       <DataGrid.Toolbar>
-        <div className="flex items-center gap-2 mb-2 relative" id="filter-toolbar-row">
+        <div className="flex items-center gap-2 mb-2 relative">
           <button
             className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
             onClick={() => setFilterPanelOpen(true)}
-            id="open-filter-panel-btn"
           >Filter Panel</button>
           <button
             className="px-3 py-1 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
@@ -77,17 +93,43 @@ const fullFeaturedSource = `function FullFeaturedExample() {
           >Columns</button>
           <span className="ml-auto font-semibold">Toolbar</span>
           {filterPanelOpen && (
-            <div className="absolute left-0 top-full mt-2 z-20 bg-white shadow-lg border border-gray-300 rounded p-4 flex gap-4 items-end" style={{ minWidth: 320 }}>
-              <label className="flex flex-col text-xs">Name
-                <input value={filters.name} onChange={e => setFilters(f => ({ ...f, name: e.target.value }))} className="border rounded px-1 py-0.5" />
-              </label>
-              <label className="flex flex-col text-xs">Age
-                <input value={filters.age} onChange={e => setFilters(f => ({ ...f, age: e.target.value }))} className="border rounded px-1 py-0.5" />
-              </label>
-              {(filters.name || filters.age) && (
+            <div className="absolute left-0 top-full mt-2 z-20 bg-white shadow-lg border border-gray-300 rounded p-4 flex flex-col gap-2 items-end" style={{ minWidth: 340 }}>
+              <div className="flex gap-2 w-full items-end">
+                <label className="flex flex-col text-xs w-full">ID
+                  <input value={filters.id} onChange={e => setFilters(f => ({ ...f, id: e.target.value }))} className="border rounded px-1 py-0.5" />
+                </label>
+              </div>
+              <div className="flex gap-2 w-full items-end">
+                <label className="flex flex-col text-xs w-1/2">Name
+                  <input value={filters.name} onChange={e => setFilters(f => ({ ...f, name: e.target.value }))} className="border rounded px-1 py-0.5" />
+                </label>
+                <select value={filters.nameOp} onChange={e => setFilters(f => ({ ...f, nameOp: e.target.value }))} className="border rounded px-1 py-0.5">
+                  <option value="contains">contains</option>
+                  <option value="equals">equals</option>
+                  <option value="startsWith">starts with</option>
+                  <option value="endsWith">ends with</option>
+                </select>
+              </div>
+              <div className="flex gap-2 w-full items-end">
+                <label className="flex flex-col text-xs w-1/2">Age
+                  <input value={filters.age} onChange={e => setFilters(f => ({ ...f, age: e.target.value }))} className="border rounded px-1 py-0.5" />
+                </label>
+              </div>
+              <div className="flex gap-2 w-full items-end">
+                <label className="flex flex-col text-xs w-1/2">Email
+                  <input value={filters.email} onChange={e => setFilters(f => ({ ...f, email: e.target.value }))} className="border rounded px-1 py-0.5" />
+                </label>
+                <select value={filters.emailOp} onChange={e => setFilters(f => ({ ...f, emailOp: e.target.value }))} className="border rounded px-1 py-0.5">
+                  <option value="contains">contains</option>
+                  <option value="equals">equals</option>
+                  <option value="startsWith">starts with</option>
+                  <option value="endsWith">ends with</option>
+                </select>
+              </div>
+              {(filters.id || filters.name || filters.age || filters.email) && (
                 <button
                   className="ml-2 px-2 py-0.5 border border-black bg-black text-white rounded hover:bg-white hover:text-black font-semibold transition"
-                  onClick={() => setFilters({ name: '', age: '' })}
+                  onClick={() => setFilters(f => ({ ...f, id: '', name: '', age: '', email: '' }))}
                 >Clear</button>
               )}
               <button
