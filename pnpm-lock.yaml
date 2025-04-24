@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/react':
+        specifier: ^19.1.2
+        version: 19.1.2
       typescript:
         specifier: ^5.0.0
         version: 5.8.3

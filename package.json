@@ -12,6 +12,7 @@
     "docs"
   ],
   "devDependencies": {
+    "@types/react": "^19.1.2",
     "typescript": "^5.0.0"
   }
 }
