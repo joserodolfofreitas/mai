@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "pnpm --filter docs dev",
-    "build": "pnpm --filter docs build && pnpm --filter @mai/datagrid build",
+    "build": "pnpm --filter @mai/datagrid build && pnpm --filter docs build",
     "release": "pnpm --filter @mai/datagrid publish --access public"
   },
   "workspaces": [
