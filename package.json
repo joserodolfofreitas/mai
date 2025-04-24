@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "pnpm --filter docs dev",
     "build": "pnpm --filter @mai/datagrid build && pnpm --filter docs build",
-    "release": "pnpm --filter @mai/datagrid publish --access public"
+    "release": "pnpm --filter @mai/datagrid publish --access public",
+    "postinstall": "pnpm --filter @mai/datagrid build"
   },
   "workspaces": [
     "packages/*",
